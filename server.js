@@ -50,7 +50,7 @@ app.use('/admin', adminRouter);
 //--------Server & Database Connection----------------
 connectDb().then(() => {
     app.listen(PORT, () => {
-        console.log(`Server Started : http://localhost:3000/user/login`);
+        console.log(`Server Started : http://localhost:${PORT}/user/login`);
     });
 }).catch(err => {
     console.error('Failed to connect DB, server not started:', err);
