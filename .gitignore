@@ -1,0 +1,19 @@
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# dotenv files (do NOT commit your real .env)
+.env
+.env.local
+.env.*.local
+
+# OS / editors / misc
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# Build
+dist/
+build/

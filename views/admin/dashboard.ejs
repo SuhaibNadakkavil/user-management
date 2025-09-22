@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="">Admin Dashboard</a>
+            <div class="d-flex ms-auto">
+                <form action="/admin/logout" method="GET">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+
+        <% if (success && success.length> 0) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= success[0] %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <% } %>
+
+                <% if (error && error.length> 0) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <%= error[0] %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <% } %>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <form class="d-flex" action="/admin/search" method="GET">
+                                <input class="form-control me-2" id="searchInput" type="search" name="q"
+                                    placeholder="Search users" aria-label="Search">
+                                <button class="btn btn-primary me-2" type="submit">Search</button>
+                                <a href="/admin/dashboard" class="btn btn-secondary">Clear</a>
+                            </form>
+                        </div>
+
+                        <form action="/admin/dashboard" method="post" class="row g-3 mb-4" id="addUserForm">
+                            <div class="col-md-3">
+                                <input type="text" name="name" class="form-control" placeholder="Name"
+                                    value="<%= oldAdd?.name || '' %>" />
+                                <% if (errors && errors.name) { %>
+                                    <p class="text-danger mb-0 error-msg">
+                                        <%= errors.name %>
+                                    </p>
+                                    <% } %>
+
+
+                            </div>
+                            <div class="col-md-3">
+                                <input type="email" name="email" class="form-control" placeholder="Email"
+                                    value="<%= oldAdd?.email || '' %>" />
+                                <% if (errors && errors.email) { %>
+                                    <p class="text-danger mb-0 error-msg">
+                                        <%= errors.email %>
+                                    </p>
+                                    <% } %>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <input type="password" name="password" class="form-control" placeholder="Password"
+                                    value="<%= oldAdd?.password || '' %>" />
+                                <% if (errors && errors.password) { %>
+                                    <p class="text-danger mb-0 error-msg">
+                                        <%= errors.password %>
+                                    </p>
+                                    <% } %>
+                            </div>
+
+
+                            <div class="col-md-3 ">
+                                <button class="btn btn-success" type="submit">Add User</button>
+                            </div>
+                        </form>
+
+                        <table class="table table-bordered text-center table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <% users.forEach((user, index)=> { %>
+                                    <tr>
+                                        <td class="index">
+                                            <%= index + 1 %>
+                                        </td>
+                                        <td>
+                                            <%= user.name %>
+                                        </td>
+                                        <td>
+                                            <%= user.email %>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#editModal<%= user._id %>">Edit</button>
+                                            <button class="btn btn-danger btn-sm delete-btn"
+                                                data-id="<%= user._id %>">Delete</button>
+                                        </td>
+                                    </tr>
+
+                                    <div class="modal fade" id="editModal<%= user._id %>" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form action="/admin/edit/<%= user._id %>" method="post"
+                                                    class="editUserForm">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Edit User</h5>
+                                                        <button type="button" class="btn-close"
+                                                            data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="text" name="name" value="<%= user.name %>"
+                                                            class="form-control mb-2" placeholder="Name" />
+                                                        <% if (errors2 && errors2.name && oldEdit &&
+                                                            oldEdit._id==user._id) { %>
+                                                            <p class="text-danger mb-0">
+                                                                <%= errors2.name %>
+                                                            </p>
+                                                            <% } %>
+
+                                                                <input type="email" name="email"
+                                                                    value="<%= user.email %>" class="form-control mb-2"
+                                                                    placeholder="Email" />
+                                                                <% if (errors2 && errors2.email && oldEdit &&
+                                                                    oldEdit._id==user._id) { %>
+                                                                    <p class="text-danger mb-0">
+                                                                        <%= errors2.email %>
+                                                                    </p>
+                                                                    <% } %>
+
+                                                                        <input type="password" name="password"
+                                                                            placeholder="New password"
+                                                                            class="form-control" />
+                                                                        <% if (errors2 && errors2.password && oldEdit &&
+                                                                            oldEdit._id==user._id) { %>
+                                                                            <p class="text-danger mb-0">
+                                                                                <%= errors2.password %>
+                                                                            </p>
+                                                                            <% } %>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-success">Save
+                                                            Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <% }) %>
+                            </tbody>
+                        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const deleteButtons = document.querySelectorAll(".delete-btn");
+
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", async () => {
+                    const userId = button.getAttribute("data-id");
+
+                    const result = await Swal.fire({
+                        title: "Are you sure?",
+                        text: "This user will be deleted permanently!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, delete it!"
+                    });
+
+                    if (result.isConfirmed) {
+                        try {
+                            const response = await fetch(`/admin/delete/${userId}`, { method: "DELETE" });
+                            const data = await response.json();
+
+                            if (data.success) {
+                                Swal.fire("Deleted!", "User has been deleted.", "success");
+                                const row = button.closest("tr");
+                                row.remove();
+
+                                const rows = document.querySelectorAll("#userTableBody tr");
+                                rows.forEach((row, index) => {
+                                    row.querySelector(".index").textContent = index + 1;
+                                });
+
+                            } else {
+                                Swal.fire("Error!", data.message || "Delete failed.", "error");
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                    }
+                });
+            });
+        });
+
+        document.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", () => {
+                const errorMsg = input.closest(".col-md-3").querySelector(".error-msg");
+                if (errorMsg) errorMsg.remove(); // remove server error dynamically
+            });
+        });
+
+        document.querySelectorAll(".editUserForm input").forEach(input => {
+            input.addEventListener("input", () => {
+                const errorMsg = input.closest(".modal-body").querySelector(".text-danger");
+                if (errorMsg) errorMsg.remove(); // remove server error dynamically
+            });
+        });
+
+    </script>
+    <% if (errors2 && oldEdit && oldEdit._id) { %>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                var modal = new bootstrap.Modal(document.getElementById("editModal<%= oldEdit._id %>"));
+                modal.show();
+            });
+        </script>
+        <% } %>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
