@@ -47,10 +47,14 @@ app.use(express.json());
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
 
+app.get('/', (req, res) => {
+    res.redirect('/user/login');
+});
+
 //--------Server & Database Connection----------------
 connectDb().then(() => {
     app.listen(PORT, () => {
-        console.log(`Server Started : http://localhost:${PORT}/user/login`);
+        console.log(`Server Started on port: ${PORT}`);
     });
 }).catch(err => {
     console.error('Failed to connect DB, server not started:', err);
